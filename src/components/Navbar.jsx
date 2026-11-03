@@ -1,8 +1,10 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import {
   Search,
   MapPinned,
@@ -11,7 +13,6 @@ import {
   Menu,
   X,
   LogOut,
-  ChevronDown,
 } from "lucide-react";
 
 import { authClient, useSession } from "@/lib/auth-client";
@@ -33,16 +34,21 @@ const categories = [
 export default function Navbar() {
   const router = useRouter();
 
-  const { data: session, isPending, refetch } = useSession();
-
-  const [search, setSearch] = useState("");
-  const [moreOpen, setMoreOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
+  // Better Auth Session
+  const {
+    data: session,
+    isPending,
+    refetch,
+  } = useSession();
 
   const user = session?.user;
 
-  // Refresh session when the tab becomes active again.
+  // States
+  const [search, setSearch] = useState("");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  // Refresh session when tab becomes active
   useEffect(() => {
     const refreshSession = () => {
       refetch?.();
@@ -55,28 +61,42 @@ export default function Navbar() {
     };
   }, [refetch]);
 
-  // Listen for authentication changes from Signup/Login pages.
+  // Listen for Login / Signup / Logout events
   useEffect(() => {
     const handleAuthChange = () => {
       refetch?.();
     };
 
-    window.addEventListener("auth-state-changed", handleAuthChange);
+    window.addEventListener(
+      "auth-state-changed",
+      handleAuthChange
+    );
 
     return () => {
-      window.removeEventListener("auth-state-changed", handleAuthChange);
+      window.removeEventListener(
+        "auth-state-changed",
+        handleAuthChange
+      );
     };
   }, [refetch]);
 
+  // Search
   const handleSearch = (e) => {
     e.preventDefault();
 
-    if (search.trim()) {
-      router.push(`/shop?search=${encodeURIComponent(search.trim())}`);
-      setSearch("");
-    }
+    const searchValue = search.trim();
+
+    if (!searchValue) return;
+
+    router.push(
+      `/shop?search=${encodeURIComponent(searchValue)}`
+    );
+
+    setSearch("");
+    setMoreOpen(false);
   };
 
+  // Logout
   const handleSignOut = async () => {
     if (loggingOut) return;
 
@@ -90,14 +110,20 @@ export default function Navbar() {
         return;
       }
 
-      setProfileOpen(false);
+      // Close menus
       setMoreOpen(false);
 
-      // Immediately refresh the Navbar session.
+      // Update session across components
+      window.dispatchEvent(
+        new Event("auth-state-changed")
+      );
+
       await refetch?.();
 
+      // Redirect to Home
       router.replace("/");
       router.refresh();
+
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -105,16 +131,17 @@ export default function Navbar() {
     }
   };
 
-  const userInitial = user?.name
-    ? user.name.charAt(0).toUpperCase()
-    : "U";
-
   return (
     <header className="sticky top-0 z-50 w-full bg-[#55532B] text-[#FFFEF7] shadow-md">
+
       {/* Top Navbar */}
       <div className="mx-auto flex max-w-[1800px] items-center gap-5 px-4 py-3 sm:px-6 lg:px-8">
+
         {/* Logo */}
-        <Link href="/" className="flex min-w-fit items-center gap-2">
+        <Link
+          href="/"
+          className="flex min-w-fit items-center gap-2"
+        >
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FFFEF7] text-[#55532B]">
             <span className="text-3xl">🌿</span>
           </div>
@@ -155,12 +182,14 @@ export default function Navbar() {
 
         {/* Right Actions */}
         <div className="ml-auto flex items-center gap-3 sm:gap-5 lg:ml-0 lg:gap-7">
+
           {/* Order Track */}
           <Link
             href="/track-order"
             className="flex flex-col items-center gap-1 transition hover:text-[#E8DCA9]"
           >
             <MapPinned size={23} />
+
             <span className="hidden text-xs font-medium sm:block">
               Order Track
             </span>
@@ -170,85 +199,26 @@ export default function Navbar() {
           {isPending ? (
             <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
           ) : user ? (
-            <div className="relative">
-              <button
-                onClick={() => setProfileOpen((prev) => !prev)}
-                aria-expanded={profileOpen}
-                className="flex items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-white/10"
-              >
-                {/* User Avatar */}
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#E8DCA9] text-base font-bold text-[#55532B]">
-                  {user.image ? (
-                    <img
-                      src={user.image}
-                      alt={user.name || "User"}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    userInitial
-                  )}
-                </div>
+            <Link
+              href="/dashboard"
+              className="flex flex-col items-center gap-1 transition hover:text-[#E8DCA9]"
+              aria-label="My Account Dashboard"
+            >
+              <UserRound size={24} />
 
-                {/* User Name and Email */}
-                <div className="hidden max-w-[130px] text-left sm:block">
-                  <p className="truncate text-xs font-bold text-[#FFFEF7]">
-                    {user.name || "User"}
-                  </p>
-                  <p className="truncate text-[10px] text-[#E8DCA9]">
-                    {user.email}
-                  </p>
-                </div>
-
-                <ChevronDown size={16} />
-              </button>
-
-              {/* Profile Dropdown */}
-              {profileOpen && (
-                <div className="absolute right-0 top-full z-[60] mt-3 w-64 overflow-hidden rounded-xl border border-[#E8DCA9] bg-[#FFFEF7] text-[#55532B] shadow-xl">
-                  <div className="border-b border-[#E8DCA9]/60 px-4 py-4">
-                    <p className="font-bold">{user.name || "User"}</p>
-                    <p className="mt-1 break-all text-xs text-[#8B896B]">
-                      {user.email}
-                    </p>
-                  </div>
-
-                  <div className="p-2">
-                    <Link
-                      href="/profile"
-                      onClick={() => setProfileOpen(false)}
-                      className="block rounded-lg px-3 py-2.5 text-sm font-medium transition hover:bg-[#F7F6E9]"
-                    >
-                      My Profile
-                    </Link>
-
-                    <Link
-                      href="/orders"
-                      onClick={() => setProfileOpen(false)}
-                      className="block rounded-lg px-3 py-2.5 text-sm font-medium transition hover:bg-[#F7F6E9]"
-                    >
-                      My Orders
-                    </Link>
-
-                    <button
-                      onClick={handleSignOut}
-                      disabled={loggingOut}
-                      className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
-                    >
-                      <LogOut size={17} />
-                      {loggingOut ? "Signing Out..." : "Sign Out"}
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+              <span className="text-xs font-semibold">
+                My Account
+              </span>
+            </Link>
           ) : (
             <Link
               href="/auth/login"
               className="flex flex-col items-center gap-1 transition hover:text-[#E8DCA9]"
             >
               <UserRound size={24} />
-              <span className="hidden text-xs font-medium sm:block">
-                Sign In
+
+              <span className="text-xs font-semibold">
+                Login
               </span>
             </Link>
           )}
@@ -269,14 +239,18 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* More */}
+          {/* More Menu */}
           <button
             onClick={() => setMoreOpen((prev) => !prev)}
             aria-label="More menu"
             aria-expanded={moreOpen}
             className="relative flex flex-col items-center gap-1 transition hover:text-[#E8DCA9]"
           >
-            {moreOpen ? <X size={25} /> : <Menu size={25} />}
+            {moreOpen ? (
+              <X size={25} />
+            ) : (
+              <Menu size={25} />
+            )}
 
             <span className="hidden text-xs font-medium sm:block">
               More
@@ -326,40 +300,63 @@ export default function Navbar() {
 
       {/* More Dropdown */}
       {moreOpen && (
-        <div className="absolute right-4 top-full z-50 mt-2 w-56 overflow-hidden rounded-xl border border-[#E8DCA9] bg-[#FFFEF7] py-2 text-[#55532B] shadow-xl">
-          {[
-            { name: "About Us", href: "/about" },
-            { name: "Our Process", href: "/process" },
-            { name: "Contact Us", href: "/contact" },
-            ...(user
-              ? [
-                  { name: "My Account", href: "/profile" },
-                  { name: "My Orders", href: "/orders" },
-                ]
-              : [{ name: "My Account", href: "/auth/login" }]),
-          ].map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={() => setMoreOpen(false)}
-              className="block px-5 py-3 text-sm font-medium transition hover:bg-[#F7F6E9] hover:text-[#8A7738]"
-            >
-              {item.name}
-            </Link>
-          ))}
+        <>
+          {/* Mobile / Desktop Outside Click */}
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setMoreOpen(false)}
+          />
 
-          {/* Mobile Logout */}
-          {user && (
-            <button
-              onClick={handleSignOut}
-              disabled={loggingOut}
-              className="flex w-full items-center gap-2 border-t border-[#E8DCA9]/60 px-5 py-3 text-left text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
-            >
-              <LogOut size={16} />
-              {loggingOut ? "Signing Out..." : "Sign Out"}
-            </button>
-          )}
-        </div>
+          <div className="absolute right-4 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border border-[#E8DCA9] bg-[#FFFEF7] py-2 text-[#55532B] shadow-xl">
+
+            {[
+              { name: "About Us", href: "/about" },
+              { name: "Our Process", href: "/process" },
+              { name: "Contact Us", href: "/contact" },
+              ...(user
+                ? [
+                    {
+                      name: "My Account",
+                      href: "/dashboard",
+                    },
+                    {
+                      name: "My Orders",
+                      href: "/orders",
+                    },
+                  ]
+                : [
+                    {
+                      name: "Login",
+                      href: "/auth/login",
+                    },
+                  ]),
+            ].map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setMoreOpen(false)}
+                className="block px-5 py-3 text-sm font-medium transition hover:bg-[#F7F6E9] hover:text-[#8A7738]"
+              >
+                {item.name}
+              </Link>
+            ))}
+
+            {/* Logout */}
+            {user && (
+              <button
+                onClick={handleSignOut}
+                disabled={loggingOut}
+                className="flex w-full items-center gap-2 border-t border-[#E8DCA9]/60 px-5 py-3 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+              >
+                <LogOut size={17} />
+
+                {loggingOut
+                  ? "Signing Out..."
+                  : "Logout"}
+              </button>
+            )}
+          </div>
+        </>
       )}
     </header>
   );
