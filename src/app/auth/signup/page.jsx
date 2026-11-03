@@ -34,6 +34,7 @@ const SignupPage = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Password validation
   const passwordChecks = [
     {
       label: "At least 8 characters",
@@ -53,8 +54,11 @@ const SignupPage = () => {
     },
   ];
 
-  const isPasswordValid = passwordChecks.every((item) => item.valid);
+  const isPasswordValid = passwordChecks.every(
+    (item) => item.valid
+  );
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -66,8 +70,11 @@ const SignupPage = () => {
     setError("");
   };
 
+  // Handle Signup
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    if (loading) return;
 
     setError("");
     setSuccess("");
@@ -77,8 +84,15 @@ const SignupPage = () => {
       return;
     }
 
+    if (!formData.email.trim()) {
+      setError("Please enter your email address.");
+      return;
+    }
+
     if (!isPasswordValid) {
-      setError("Please create a password that meets all requirements.");
+      setError(
+        "Please create a password that meets all requirements."
+      );
       return;
     }
 
@@ -90,30 +104,43 @@ const SignupPage = () => {
     try {
       setLoading(true);
 
-      const { error: signupError } = await authClient.signUp.email({
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        password: formData.password,
-        callbackURL: "/",
-      });
+      const { error: signupError } =
+        await authClient.signUp.email({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          callbackURL: "/",
+        });
 
       if (signupError) {
         setError(
-          signupError.message || "Unable to create your account."
+          signupError.message ||
+            "Unable to create your account."
         );
         return;
       }
 
-      setSuccess("Your account has been created successfully!");
+      setSuccess(
+        "Your account has been created successfully!"
+      );
 
-      setTimeout(() => {
-        router.push("/");
-        router.refresh();
-      }, 1500);
+      // Notify Navbar about authentication changes
+      window.dispatchEvent(
+        new Event("auth-state-changed")
+      );
+
+      // Allow the session to update
+      await new Promise((resolve) =>
+        setTimeout(resolve, 500)
+      );
+
+      router.replace("/");
+      router.refresh();
 
     } catch (err) {
       setError(
-        err.message || "Something went wrong. Please try again."
+        err.message ||
+          "Something went wrong. Please try again."
       );
     } finally {
       setLoading(false);
@@ -122,16 +149,19 @@ const SignupPage = () => {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F7F6E9] px-4 py-10 sm:px-6">
-
       <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl bg-[#FFFEF7] shadow-2xl lg:grid-cols-2">
 
         {/* Left Side */}
         <div className="relative hidden flex-col justify-between overflow-hidden bg-[#55532B] p-10 text-white lg:flex">
 
           <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[#E8DCA9]/20 blur-3xl" />
+
           <div className="absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[#E8DCA9]/10 blur-3xl" />
 
-          <Link href="/" className="relative z-10 flex items-center gap-3">
+          <Link
+            href="/"
+            className="relative z-10 flex items-center gap-3"
+          >
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E8DCA9] text-[#55532B]">
               <Leaf size={26} />
             </div>
@@ -140,6 +170,7 @@ const SignupPage = () => {
               <h2 className="font-serif text-2xl font-bold">
                 Shreyoshi Foods
               </h2>
+
               <p className="text-[10px] tracking-[3px] text-[#E8DCA9]">
                 PURE NATURE · PURE TASTE
               </p>
@@ -162,8 +193,8 @@ const SignupPage = () => {
             </h1>
 
             <p className="mt-6 max-w-sm text-sm leading-7 text-white/75">
-              Discover the goodness of carefully selected food
-              products and bring natural taste to your home.
+              Discover the goodness of carefully selected
+              food products and bring natural taste to your home.
             </p>
           </div>
 
@@ -198,7 +229,10 @@ const SignupPage = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSignup} className="space-y-5">
+          <form
+            onSubmit={handleSignup}
+            className="space-y-5"
+          >
 
             {/* Full Name */}
             <div>
@@ -220,7 +254,8 @@ const SignupPage = () => {
                   placeholder="Enter your full name"
                   autoComplete="name"
                   required
-                  className="w-full rounded-xl border border-[#55532B]/15 bg-white py-3.5 pl-11 pr-4 text-sm text-[#55532B] outline-none transition placeholder:text-[#AAA58F] focus:border-[#55532B] focus:ring-2 focus:ring-[#55532B]/10"
+                  disabled={loading}
+                  className="w-full rounded-xl border border-[#55532B]/15 bg-white py-3.5 pl-11 pr-4 text-sm text-[#55532B] outline-none transition placeholder:text-[#AAA58F] focus:border-[#55532B] focus:ring-2 focus:ring-[#55532B]/10 disabled:opacity-60"
                 />
               </div>
             </div>
@@ -245,7 +280,8 @@ const SignupPage = () => {
                   placeholder="Enter your email"
                   autoComplete="email"
                   required
-                  className="w-full rounded-xl border border-[#55532B]/15 bg-white py-3.5 pl-11 pr-4 text-sm text-[#55532B] outline-none transition placeholder:text-[#AAA58F] focus:border-[#55532B] focus:ring-2 focus:ring-[#55532B]/10"
+                  disabled={loading}
+                  className="w-full rounded-xl border border-[#55532B]/15 bg-white py-3.5 pl-11 pr-4 text-sm text-[#55532B] outline-none transition placeholder:text-[#AAA58F] focus:border-[#55532B] focus:ring-2 focus:ring-[#55532B]/10 disabled:opacity-60"
                 />
               </div>
             </div>
@@ -270,16 +306,27 @@ const SignupPage = () => {
                   placeholder="Create a password"
                   autoComplete="new-password"
                   required
-                  className="w-full rounded-xl border border-[#55532B]/15 bg-white py-3.5 pl-11 pr-12 text-sm text-[#55532B] outline-none transition placeholder:text-[#AAA58F] focus:border-[#55532B] focus:ring-2 focus:ring-[#55532B]/10"
+                  disabled={loading}
+                  className="w-full rounded-xl border border-[#55532B]/15 bg-white py-3.5 pl-11 pr-12 text-sm text-[#55532B] outline-none transition placeholder:text-[#AAA58F] focus:border-[#55532B] focus:ring-2 focus:ring-[#55532B]/10 disabled:opacity-60"
                 />
 
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() =>
+                    setShowPassword(!showPassword)
+                  }
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9A946F] hover:text-[#55532B]"
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
                 </button>
               </div>
 
@@ -289,12 +336,18 @@ const SignupPage = () => {
                   <div
                     key={item.label}
                     className={`flex items-center gap-1.5 text-[11px] ${
-                      item.valid ? "text-[#55532B]" : "text-[#9A946F]"
+                      item.valid
+                        ? "text-[#55532B]"
+                        : "text-[#9A946F]"
                     }`}
                   >
                     <CheckCircle2
                       size={13}
-                      className={item.valid ? "text-green-600" : "text-[#C5BEA6]"}
+                      className={
+                        item.valid
+                          ? "text-green-600"
+                          : "text-[#C5BEA6]"
+                      }
                     />
                     {item.label}
                   </div>
@@ -315,23 +368,30 @@ const SignupPage = () => {
                 />
 
                 <input
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={
+                    showConfirmPassword ? "text" : "password"
+                  }
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Confirm your password"
                   autoComplete="new-password"
                   required
-                  className="w-full rounded-xl border border-[#55532B]/15 bg-white py-3.5 pl-11 pr-12 text-sm text-[#55532B] outline-none transition placeholder:text-[#AAA58F] focus:border-[#55532B] focus:ring-2 focus:ring-[#55532B]/10"
+                  disabled={loading}
+                  className="w-full rounded-xl border border-[#55532B]/15 bg-white py-3.5 pl-11 pr-12 text-sm text-[#55532B] outline-none transition placeholder:text-[#AAA58F] focus:border-[#55532B] focus:ring-2 focus:ring-[#55532B]/10 disabled:opacity-60"
                 />
 
                 <button
                   type="button"
                   onClick={() =>
-                    setShowConfirmPassword(!showConfirmPassword)
+                    setShowConfirmPassword(
+                      !showConfirmPassword
+                    )
                   }
                   aria-label={
-                    showConfirmPassword ? "Hide password" : "Show password"
+                    showConfirmPassword
+                      ? "Hide password"
+                      : "Show password"
                   }
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9A946F] hover:text-[#55532B]"
                 >
@@ -344,21 +404,12 @@ const SignupPage = () => {
               </div>
 
               {formData.confirmPassword &&
-                formData.password !== formData.confirmPassword && (
+                formData.password !==
+                  formData.confirmPassword && (
                   <p className="mt-2 text-xs text-red-600">
                     Passwords do not match.
                   </p>
                 )}
-            </div>
-
-            {/* Forgot Password */}
-            <div className="flex justify-end">
-              <Link
-                href="/forgot-password"
-                className="text-xs font-semibold text-[#77743B] transition hover:text-[#55532B]"
-              >
-                Forgot Password?
-              </Link>
             </div>
 
             {/* Error Message */}
@@ -387,7 +438,9 @@ const SignupPage = () => {
               disabled={loading}
               className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#55532B] py-4 text-sm font-bold text-[#FFFEF7] transition duration-300 hover:bg-[#77743B] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Creating Account..." : "Create Account"}
+              {loading
+                ? "Creating Account..."
+                : "Create Account"}
 
               {!loading && (
                 <ArrowRight
@@ -396,7 +449,6 @@ const SignupPage = () => {
                 />
               )}
             </button>
-
           </form>
 
           {/* Login Link */}
@@ -411,10 +463,10 @@ const SignupPage = () => {
           </p>
 
           <p className="mt-8 text-center text-[11px] leading-5 text-[#9A946F]">
-            By creating an account, you agree to use Shreyoshi Foods
-            responsibly and keep your account credentials secure.
+            By creating an account, you agree to use Shreyoshi
+            Foods responsibly and keep your account credentials
+            secure.
           </p>
-
         </div>
       </div>
     </main>
