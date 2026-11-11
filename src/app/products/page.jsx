@@ -12,7 +12,7 @@ export default async function ProductsPage() {
 
   return (
     <main className="min-h-screen bg-[#FFFEF7] px-4 py-12 md:px-8">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto ">
         <div className="mb-10 text-center">
           <p className="mb-2 text-sm font-semibold uppercase tracking-[3px] text-[#77764A]">
             Shreyoshi Foods
