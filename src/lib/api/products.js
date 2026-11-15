@@ -71,9 +71,16 @@ export async function getProductBySlug(slug) {
 
   const result = await response.json();
 
-  if (!response.ok) {
-    throw new Error(result.message || "Failed to fetch product");
-  }
+if (!response.ok) {
+  throw new Error(result.message || "Product creation failed");
+}
 
-  return result.product;
+// Notify dashboard that products have changed
+if (typeof window !== "undefined") {
+  window.dispatchEvent(
+    new Event("products-updated")
+  );
+}
+
+return result.product;
 }

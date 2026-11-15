@@ -1,98 +1,107 @@
 
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
 import {
-  Wallet,
-  ShoppingBag,
-  Users,
   Package,
-  TrendingUp,
-  TrendingDown,
+  RefreshCw,
 } from "lucide-react";
 
-import { adminStats } from "@/data/dashboard/admin-data";
-
-const icons = {
-  revenue: Wallet,
-  orders: ShoppingBag,
-  customers: Users,
-  lowStock: Package,
-};
-
-const styles = {
-  revenue: {
-    iconBg: "bg-[#EDEEDC]",
-    iconColor: "text-[#55532B]",
-  },
-  orders: {
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
-  },
-  customers: {
-    iconBg: "bg-purple-50",
-    iconColor: "text-purple-600",
-  },
-  lowStock: {
-    iconBg: "bg-orange-50",
-    iconColor: "text-orange-600",
-  },
-};
+import { getProducts } from "@/lib/api/products";
 
 export default function StatsCards() {
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const fetchProductCount = useCallback(async () => {
+    try {
+      const products = await getProducts();
+
+      setTotalProducts(products.length);
+      setError("");
+    } catch (err) {
+      console.error("Product Count Error:", err);
+      setError("Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Initial load
+    fetchProductCount();
+
+    // Listen for product creation in this application
+    const handleProductsUpdated = () => {
+      fetchProductCount();
+    };
+
+    window.addEventListener(
+      "products-updated",
+      handleProductsUpdated
+    );
+
+    // Refresh every 3 seconds for updates from other admins
+    const interval = setInterval(() => {
+      fetchProductCount();
+    }, 3000);
+
+    return () => {
+      window.removeEventListener(
+        "products-updated",
+        handleProductsUpdated
+      );
+
+      clearInterval(interval);
+    };
+  }, [fetchProductCount]);
+
   return (
-    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {adminStats.map((stat) => {
-        const Icon = icons[stat.id];
-        const style = styles[stat.id];
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-        if (!Icon || !style) return null;
+      {/* Total Products */}
+      <div className="rounded-xl border border-[#EAE8DF] bg-white p-5 shadow-sm transition hover:shadow-md">
 
-        return (
-          <div
-            key={stat.id}
-            className="group rounded-2xl border border-[#EAE8D9] bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
-          >
-            {/* Card Header */}
-            <div className="flex items-center justify-between">
-              <div
-                className={`flex h-12 w-12 items-center justify-center rounded-xl ${style.iconBg} ${style.iconColor}`}
-              >
-                <Icon size={23} strokeWidth={1.8} />
-              </div>
+        <div className="flex items-center justify-between">
 
-              {stat.change && (
-                <div
-                  className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                    stat.trend === "down"
-                      ? "bg-red-50 text-red-600"
-                      : "bg-green-50 text-green-600"
-                  }`}
-                >
-                  {stat.trend === "down" ? (
-                    <TrendingDown size={14} />
-                  ) : (
-                    <TrendingUp size={14} />
-                  )}
-                  {stat.change}
-                </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500">
+              Total Products
+            </p>
+
+            <h2 className="mt-2 text-3xl font-bold text-[#55532B]">
+              {loading ? (
+                <span className="text-xl">Loading...</span>
+              ) : (
+                totalProducts.toLocaleString("en-BD")
               )}
-            </div>
+            </h2>
 
-            {/* Card Content */}
-            <div className="mt-5">
-              <p className="text-sm font-medium text-[#85836D]">
-                {stat.label}
-              </p>
-
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#292817] sm:text-3xl">
-                {stat.value}
-              </h2>
-
-              <p className="mt-2 text-xs text-[#999781]">
-                {stat.description}
-              </p>
-            </div>
+            <p className="mt-1 text-xs text-gray-400">
+              Total products added to store
+            </p>
           </div>
-        );
-      })}
-    </section>
+
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F7F6E9] text-[#55532B]">
+            <Package size={25} />
+          </div>
+
+        </div>
+
+        {error && (
+          <p className="mt-3 text-xs text-red-500">
+            {error}
+          </p>
+        )}
+
+        <div className="mt-4 flex items-center gap-1 text-xs text-green-600">
+          <RefreshCw size={12} />
+          Auto updating
+        </div>
+
+      </div>
+
+    </div>
   );
 }

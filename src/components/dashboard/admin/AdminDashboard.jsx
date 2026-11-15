@@ -52,21 +52,21 @@ export default function AdminDashboard() {
 
       <div className="grid gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <RevenueOverview />
+          {/* <RevenueOverview /> */}
         </div>
 
-        <OrderSummary />
+        {/* <OrderSummary /> */}
       </div>
 
       <div className="grid gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <RecentOrders />
+          {/* <RecentOrders /> */}
         </div>
 
-        <TopProducts />
+        {/* <TopProducts /> */}
       </div>
 
-      <LowStockAlert />
+      {/* <LowStockAlert /> */}
     </div>
   );
 }
