@@ -26,6 +26,7 @@ import {
   MapPinned,
   Heart,
   ClipboardList,
+  ImageIcon,
 } from "lucide-react";
 
 import { authClient, useSession } from "@/lib/auth-client";
@@ -36,25 +37,68 @@ const roleMenus = {
     {
       title: "OVERVIEW",
       items: [
-        { name: "Dashboard", href: "/dashboard/admin", icon: LayoutDashboard },
-        { name: "Analytics", href: "/dashboard/analytics", icon: ChartNoAxesCombined },
+        {
+          name: "Dashboard",
+          href: "/dashboard/admin",
+          icon: LayoutDashboard,
+        },
+        {
+          name: "Analytics",
+          href: "/dashboard/analytics",
+          icon: ChartNoAxesCombined,
+        },
       ],
     },
+
     {
       title: "STORE MANAGEMENT",
       items: [
-        { name: "Products", href: "/dashboard/products", icon: Package },
-        { name: "Categories", href: "/dashboard/categories", icon: Tags },
-        { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag },
-        { name: "Inventory", href: "/dashboard/inventory", icon: Warehouse },
-        { name: "Shipping", href: "/dashboard/shipping", icon: Truck },
+        {
+          name: "Products",
+          href: "/dashboard/products",
+          icon: Package,
+        },
+        {
+          name: "Categories",
+          href: "/dashboard/categories",
+          icon: Tags,
+        },
+        {
+          name: "Orders",
+          href: "/dashboard/orders",
+          icon: ShoppingBag,
+        },
+        {
+          name: "Inventory",
+          href: "/dashboard/inventory",
+          icon: Warehouse,
+        },
+        {
+          name: "Shipping",
+          href: "/dashboard/shipping",
+          icon: Truck,
+        },
+        {
+          name: "Homepage",
+          href: "/dashboard/admin/homepage",
+          icon: ImageIcon,
+        },
       ],
     },
+
     {
       title: "CUSTOMER & REPORTS",
       items: [
-        { name: "Customers", href: "/dashboard/customers", icon: Users },
-        { name: "Sales Reports", href: "/dashboard/reports", icon: FileBarChart },
+        {
+          name: "Customers",
+          href: "/dashboard/customers",
+          icon: Users,
+        },
+        {
+          name: "Sales Reports",
+          href: "/dashboard/reports",
+          icon: FileBarChart,
+        },
       ],
     },
   ],
@@ -63,24 +107,58 @@ const roleMenus = {
     {
       title: "OVERVIEW",
       items: [
-        { name: "Dashboard", href: "/dashboard/manager", icon: LayoutDashboard },
-        { name: "Analytics", href: "/dashboard/analytics", icon: ChartNoAxesCombined },
+        {
+          name: "Dashboard",
+          href: "/dashboard/manager",
+          icon: LayoutDashboard,
+        },
+        {
+          name: "Analytics",
+          href: "/dashboard/analytics",
+          icon: ChartNoAxesCombined,
+        },
       ],
     },
+
     {
       title: "STORE MANAGEMENT",
       items: [
-        { name: "Products", href: "/dashboard/products", icon: Package },
-        { name: "Categories", href: "/dashboard/categories", icon: Tags },
-        { name: "Orders", href: "/dashboard/orders", icon: ShoppingBag },
-        { name: "Inventory", href: "/dashboard/inventory", icon: Warehouse },
-        { name: "Shipping", href: "/dashboard/shipping", icon: Truck },
+        {
+          name: "Products",
+          href: "/dashboard/products",
+          icon: Package,
+        },
+        {
+          name: "Categories",
+          href: "/dashboard/categories",
+          icon: Tags,
+        },
+        {
+          name: "Orders",
+          href: "/dashboard/orders",
+          icon: ShoppingBag,
+        },
+        {
+          name: "Inventory",
+          href: "/dashboard/inventory",
+          icon: Warehouse,
+        },
+        {
+          name: "Shipping",
+          href: "/dashboard/shipping",
+          icon: Truck,
+        },
       ],
     },
+
     {
       title: "REPORTS",
       items: [
-        { name: "Sales Reports", href: "/dashboard/reports", icon: FileBarChart },
+        {
+          name: "Sales Reports",
+          href: "/dashboard/reports",
+          icon: FileBarChart,
+        },
       ],
     },
   ],
@@ -89,17 +167,42 @@ const roleMenus = {
     {
       title: "MY ACCOUNT",
       items: [
-        { name: "My Account", href: "/dashboard/user", icon: LayoutDashboard },
-        { name: "My Orders", href: "/dashboard/my-orders", icon: ShoppingBag },
-        { name: "Order Tracking", href: "/dashboard/order-tracking", icon: MapPinned },
-        { name: "My Wishlist", href: "/dashboard/wishlist", icon: Heart },
+        {
+          name: "My Account",
+          href: "/dashboard/user",
+          icon: LayoutDashboard,
+        },
+        {
+          name: "My Orders",
+          href: "/dashboard/my-orders",
+          icon: ShoppingBag,
+        },
+        {
+          name: "Order Tracking",
+          href: "/dashboard/order-tracking",
+          icon: MapPinned,
+        },
+        {
+          name: "My Wishlist",
+          href: "/dashboard/wishlist",
+          icon: Heart,
+        },
       ],
     },
+
     {
       title: "ACCOUNT SETTINGS",
       items: [
-        { name: "My Profile", href: "/dashboard/profile", icon: UserRound },
-        { name: "Settings", href: "/dashboard/settings", icon: Settings },
+        {
+          name: "My Profile",
+          href: "/dashboard/profile",
+          icon: UserRound,
+        },
+        {
+          name: "Settings",
+          href: "/dashboard/settings",
+          icon: Settings,
+        },
       ],
     },
   ],
@@ -111,10 +214,12 @@ const roleInfo = {
     label: "ADMINISTRATOR",
     color: "bg-purple-100 text-purple-700",
   },
+
   manager: {
     label: "MANAGER",
     color: "bg-blue-100 text-blue-700",
   },
+
   user: {
     label: "CUSTOMER",
     color: "bg-green-100 text-green-700",
@@ -140,6 +245,14 @@ export default function DashboardSidebar() {
 
   // Active Menu
   const isActive = (href) => {
+    if (
+      href === "/dashboard/admin" ||
+      href === "/dashboard/manager" ||
+      href === "/dashboard/user"
+    ) {
+      return pathname === href;
+    }
+
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
@@ -254,6 +367,7 @@ export default function DashboardSidebar() {
             <p className="text-xs font-bold text-[#55532B]">
               Store Management
             </p>
+
             <p className="mt-0.5 text-[10px] text-[#9A946F]">
               Organic Food Store
             </p>
@@ -325,6 +439,7 @@ export default function DashboardSidebar() {
           {isPending ? (
             <div className="mb-4 flex animate-pulse items-center gap-3 rounded-xl bg-[#F7F6E9] p-3">
               <div className="h-11 w-11 rounded-full bg-[#E8DCA9]" />
+
               <div className="flex-1 space-y-2">
                 <div className="h-3 w-24 rounded bg-[#E8DCA9]" />
                 <div className="h-2 w-32 rounded bg-[#E8DCA9]" />

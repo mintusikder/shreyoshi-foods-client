@@ -1,157 +1,240 @@
 
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   Leaf,
-  ArrowRight,
-  ArrowUpRight,
-  Sprout,
+  ChevronLeft,
+  ChevronRight,
+  ShieldCheck,
+  Heart,
 } from "lucide-react";
 
-const HomeHero = () => {
+import { getHomeHero } from "@/lib/api/home";
+
+const features = [
+  {
+    icon: Leaf,
+    title: "Natural",
+    subtitle: "Food Choices",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Quality",
+    subtitle: "Focused Products",
+  },
+  {
+    icon: Heart,
+    title: "Care",
+    subtitle: "For Every Home",
+  },
+];
+
+export default function HomeHero() {
+  const [slides, setSlides] = useState([]);
+  const [sideImage, setSideImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  // Load hero images from backend
+  useEffect(() => {
+    let active = true;
+
+    const loadHero = async () => {
+      try {
+        const data = await getHomeHero();
+
+        if (!active) return;
+
+        setSlides(data.slides || []);
+        setSideImage(data.sideImage || null);
+      } catch (error) {
+        console.error("Homepage Hero Error:", error);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+
+    loadHero();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Reset current slide when slides change
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [slides.length]);
+
+  // Auto slider
+  useEffect(() => {
+    if (slides.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [slides.length]);
+
+  const nextSlide = () => {
+    if (!slides.length) return;
+
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    if (!slides.length) return;
+
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
   return (
-    <section className="relative flex min-h-[calc(100svh-120px)] w-full items-center overflow-hidden bg-[#F7F6E9]">
+    <section className="w-full overflow-hidden bg-[#FAF7EF]">
+      <div className="mx-auto w-full max-w-[1900px] px-2 pb-2 pt-2 sm:px-4 lg:px-8 lg:pb-2 lg:pt-3 xl:px-10">
 
-      {/* Background Decoration */}
-      <div className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-full bg-[#E8DCA9]/30 blur-3xl" />
+        {/* Main Hero Grid */}
+        <div className="grid grid-cols-1 items-center gap-0 lg:grid-cols-[2fr_1fr] lg:gap-5 xl:gap-7">
 
-      <div className="mx-auto grid w-full max-w-[1600px] items-center gap-10 px-6 py-8 sm:px-10 lg:grid-cols-2 lg:gap-12 lg:px-16 lg:py-8">
+          {/* Main Slider */}
+          <div className="group relative aspect-[1.5/1] w-full overflow-hidden rounded-lg bg-[#E8DCA9] shadow-sm sm:rounded-xl lg:h-[min(48vh,380px)] lg:aspect-auto lg:rounded-[16px] lg:shadow-md">
 
-        {/* Hero Content */}
-        <div className="relative z-10">
+            {loading ? (
+              <div className="flex h-full items-center justify-center text-sm text-[#55532B]">
+                Loading homepage...
+              </div>
+            ) : slides.length > 0 ? (
+              <>
+                {slides.map((slide, index) => (
+                  <div
+                    key={`${slide.image}-${index}`}
+                    className={`absolute inset-0 transition-opacity duration-1000 ${
+                      currentSlide === index
+                        ? "z-10 opacity-100"
+                        : "z-0 opacity-0"
+                    }`}
+                  >
+                    <img
+                      src={slide.image}
+                      alt={slide.title || "Shreyoshi Foods"}
+                      className="h-full w-full object-cover"
+                    />
 
-          {/* Welcome Badge */}
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#55532B]/20 bg-white/70 px-4 py-2">
-            <Leaf size={16} className="text-[#77743B]" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/25 to-transparent" />
+                  </div>
+                ))}
 
-            <span className="text-[11px] font-semibold uppercase tracking-[2px] text-[#55532B]">
-              Welcome to Shreyoshi Foods
-            </span>
+                {/* Slider Controls */}
+                {slides.length > 1 && (
+                  <>
+                    <div className="absolute bottom-3 right-3 z-20 flex items-center gap-1.5 sm:bottom-6 sm:right-6 sm:gap-2">
+                      <button
+                        onClick={prevSlide}
+                        aria-label="Previous slide"
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-white/50 bg-black/20 text-white backdrop-blur-sm transition hover:bg-white hover:text-[#55532B] sm:h-10 sm:w-10"
+                      >
+                        <ChevronLeft size={18} />
+                      </button>
+
+                      <button
+                        onClick={nextSlide}
+                        aria-label="Next slide"
+                        className="flex h-7 w-7 items-center justify-center rounded-full border border-white/50 bg-black/20 text-white backdrop-blur-sm transition hover:bg-white hover:text-[#55532B] sm:h-10 sm:w-10"
+                      >
+                        <ChevronRight size={18} />
+                      </button>
+                    </div>
+
+                    {/* Indicators */}
+                    <div className="absolute bottom-5 left-4 z-20 flex gap-1.5 sm:bottom-8 sm:left-8 sm:gap-2">
+                      {slides.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentSlide(index)}
+                          aria-label={`Go to slide ${index + 1}`}
+                          className={`h-1.5 rounded-full transition-all sm:h-2 ${
+                            currentSlide === index
+                              ? "w-6 bg-[#E8DCA9] sm:w-8"
+                              : "w-1.5 bg-white/70 sm:w-2"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center px-4 text-center text-[#55532B]">
+                <Leaf size={35} />
+
+                <h2 className="mt-3 text-lg font-bold">
+                  Welcome to Shreyoshi Foods
+                </h2>
+
+                <p className="mt-1 text-sm">
+                  Homepage slider images will appear here.
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Heading */}
-          <h1 className="max-w-2xl font-serif text-4xl font-bold leading-[1.08] text-[#55532B] sm:text-5xl lg:text-6xl xl:text-7xl">
-            Taste the
-            <span className="block italic text-[#9A8540]">
-              Goodness
-            </span>
-            of Nature.
-          </h1>
+          {/* Right Side Image - Desktop Only */}
+          <div className="relative hidden h-[min(48vh,380px)] overflow-hidden rounded-[16px] bg-[#E8DCA9] shadow-md lg:block">
 
-          {/* Description */}
-          <p className="mt-5 max-w-xl text-sm leading-7 text-[#77745C] sm:text-base sm:leading-8">
-            Discover the authentic taste of nature with carefully
-            selected food products. Bringing quality, freshness
-            and goodness to every home.
-          </p>
+            {sideImage?.image ? (
+              <>
+                <img
+                  src={sideImage.image}
+                  alt="Shreyoshi Foods organic products"
+                  className="h-full w-full object-cover transition duration-700 hover:scale-105"
+                />
 
-          {/* Action Buttons */}
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+              </>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center text-center text-[#55532B]">
+                <Leaf size={35} />
 
-            <Link
-              href="/shop"
-              className="group inline-flex items-center gap-3 rounded-full bg-[#55532B] px-7 py-3.5 text-sm font-semibold text-[#FFFEF7] transition duration-300 hover:bg-[#77743B]"
-            >
-              Explore Products
-
-              <ArrowRight
-                size={18}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </Link>
-
-            <Link
-              href="/about"
-              className="inline-flex items-center gap-2 rounded-full border border-[#55532B]/30 px-7 py-3.5 text-sm font-semibold text-[#55532B] transition duration-300 hover:bg-[#55532B] hover:text-white"
-            >
-              Our Story
-              <ArrowUpRight size={17} />
-            </Link>
-
-          </div>
-
-          {/* Trust Section */}
-          <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-[#55532B]/15 pt-5 sm:gap-7">
-
-            <div>
-              <p className="font-serif text-xl font-bold text-[#55532B]">
-                Natural
-              </p>
-              <p className="mt-1 text-[11px] text-[#77745C]">
-                Food Choices
-              </p>
-            </div>
-
-            <div className="h-10 w-px bg-[#55532B]/20" />
-
-            <div>
-              <p className="font-serif text-xl font-bold text-[#55532B]">
-                Quality
-              </p>
-              <p className="mt-1 text-[11px] text-[#77745C]">
-                Focused Products
-              </p>
-            </div>
-
-            <div className="h-10 w-px bg-[#55532B]/20" />
-
-            <div>
-              <p className="font-serif text-xl font-bold text-[#55532B]">
-                Care
-              </p>
-              <p className="mt-1 text-[11px] text-[#77745C]">
-                For Every Home
-              </p>
-            </div>
-
+                <p className="mt-3 text-sm font-medium">
+                  Right side image will appear here.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Hero Image */}
-        <div className="relative mx-auto w-full max-w-[580px] lg:ml-auto">
+        {/* Features Section */}
+        <div className="mt-2 grid grid-cols-3 divide-x divide-[#E6DDCE] overflow-hidden rounded-lg border border-[#E6DDCE] bg-white shadow-sm sm:mt-3 lg:mt-5 lg:h-[95px] lg:rounded-[16px]">
 
-          {/* Image Decoration */}
-          <div className="absolute -right-6 -top-6 h-40 w-40 rounded-full bg-[#E8DCA9]/60 blur-3xl" />
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
 
-          <div className="absolute -bottom-6 -left-6 h-40 w-40 rounded-full bg-[#9A8540]/10 blur-3xl" />
+            return (
+              <div
+                key={index}
+                className="flex min-w-0 flex-col items-center justify-center gap-1 px-1 py-2.5 sm:gap-2 sm:py-4 lg:gap-2 lg:py-3"
+              >
+                <Icon
+                  size={18}
+                  className="shrink-0 text-[#C58B23] sm:h-6 sm:w-6 lg:h-7 lg:w-7"
+                  strokeWidth={1.8}
+                />
 
-          {/* Main Image */}
-          <div className="relative overflow-hidden rounded-[150px_150px_24px_24px] border-[7px] border-white shadow-2xl">
+                <div className="text-center">
+                  <h3 className="whitespace-nowrap text-[9px] font-bold text-[#55532B] sm:text-xs lg:text-sm">
+                    {feature.title}
+                  </h3>
 
-            <img
-              src="https://images.unsplash.com/photo-1547592180-85f173990554?w=1200&q=90"
-              alt="Fresh natural food ingredients"
-              className="h-[300px] w-full object-cover sm:h-[380px] lg:h-[420px]"
-            />
-
-          </div>
-
-          {/* Floating Badge */}
-          <div className="absolute -bottom-4 -left-2 flex items-center gap-3 rounded-xl bg-[#55532B] p-3 text-white shadow-xl sm:-left-6">
-
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8DCA9] text-[#55532B]">
-              <Sprout size={23} />
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold">
-                Nature Inspired
-              </p>
-
-              <p className="mt-1 text-[11px] text-white/70">
-                Pure Taste, Every Day
-              </p>
-            </div>
-
-          </div>
-
+                  <p className="whitespace-nowrap text-[8px] text-[#77745A] sm:text-[10px] lg:text-xs">
+                    {feature.subtitle}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
-
       </div>
     </section>
   );
-};
-
-export default HomeHero;
+}

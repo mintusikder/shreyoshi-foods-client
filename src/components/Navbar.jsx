@@ -54,17 +54,6 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  // Refresh Session
-  useEffect(() => {
-    const refreshSession = () => refetch?.();
-
-    window.addEventListener("focus", refreshSession);
-
-    return () => {
-      window.removeEventListener("focus", refreshSession);
-    };
-  }, [refetch]);
-
   // Auth State Change
   useEffect(() => {
     const handleAuthChange = () => refetch?.();
