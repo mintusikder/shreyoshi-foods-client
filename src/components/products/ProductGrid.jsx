@@ -8,7 +8,8 @@ export default function ProductGrid({ products }) {
         <h2 className="text-xl font-semibold text-[#55532B]">
           No Products Found
         </h2>
-        <p className="mt-2 text-gray-500">
+
+        <p className="mt-2 text-sm text-gray-500">
           Products will appear here when available.
         </p>
       </div>
@@ -16,9 +17,12 @@ export default function ProductGrid({ products }) {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:gap-5">
       {products.map((product) => (
-        <ProductCard key={product._id} product={product} />
+        <ProductCard
+          key={product._id}
+          product={product}
+        />
       ))}
     </div>
   );

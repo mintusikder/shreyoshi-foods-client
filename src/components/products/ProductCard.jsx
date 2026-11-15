@@ -7,7 +7,6 @@ import { ShoppingCart, Zap } from "lucide-react";
 export default function ProductCard({ product }) {
   const image = product.images?.main;
 
-  // Your MongoDB Product Structure
   const regularPrice = Number(product.regularPrice || 0);
   const salePrice = Number(product.salePrice || 0);
 
@@ -22,7 +21,13 @@ export default function ProductCard({ product }) {
       )
     : 0;
 
-  const isOutOfStock = product.stockStatus === "out_of_stock";
+  const isOutOfStock =
+    product.stockStatus === "out_of_stock";
+
+  const isNewArrival = product.isNewArrival === true;
+
+  const formatPrice = (price) =>
+    price.toLocaleString("en-BD");
 
   const handleAddToCart = () => {
     if (isOutOfStock) return;
@@ -37,95 +42,103 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div className="group overflow-hidden rounded-2xl border border-[#E8E5D5] bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+    <div className="group flex h-full flex-col overflow-hidden rounded-lg border border-[#E5E5E5] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#D8C8A0] hover:shadow-lg">
 
       {/* Product Image */}
-      <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative aspect-square overflow-hidden bg-[#F7F6E9]">
+      <Link
+        href={`/products/${product.slug}`}
+        className="block"
+      >
+        <div className="relative aspect-square overflow-hidden bg-white">
 
           {image ? (
             <img
               src={image}
               alt={product.name}
               loading="lazy"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105 sm:p-4"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-gray-400">
+            <div className="flex h-full items-center justify-center bg-[#F7F6E9] text-sm text-gray-400">
               Image Not Found
             </div>
           )}
 
-          {/* Discount Badge */}
-          {hasDiscount && (
-            <span className="absolute left-3 top-3 rounded-full bg-red-600 px-3 py-1 text-xs font-bold text-white shadow-sm">
-              {discountPercentage}% OFF
+          {/* New Arrival Badge */}
+          {isNewArrival && (
+            <span className="absolute left-3 top-3 rounded-md bg-[#F58220] px-2 py-1 text-[10px] font-semibold text-white shadow-sm sm:text-xs">
+              New Arrival
             </span>
           )}
 
-          {/* Out of Stock Badge */}
+          {/* Discount Badge */}
+          {hasDiscount && (
+            <span className="absolute right-3 top-3 rounded-md bg-[#2DBD85] px-2 py-1 text-[10px] font-semibold text-white shadow-sm sm:text-xs">
+              Save {discountPercentage}%
+            </span>
+          )}
+
+          {/* Out of Stock */}
           {isOutOfStock && (
-            <span className="absolute bottom-3 left-3 rounded-full bg-gray-800 px-3 py-1 text-xs font-semibold text-white">
+            <span className="absolute bottom-3 left-3 rounded-md bg-gray-800 px-2.5 py-1 text-xs font-semibold text-white">
               Out of Stock
             </span>
           )}
         </div>
-
-        {/* Product Information */}
-        <div className="p-4">
-          <p className="mb-1 text-xs font-medium uppercase tracking-wider text-[#88865A]">
-            {product.category}
-          </p>
-
-          <h3 className="line-clamp-2 min-h-12 font-semibold text-[#55532B] transition-colors group-hover:text-[#88865A]">
-            {product.name}
-          </h3>
-
-          {/* Price */}
-          <div className=" flex flex-wrap items-center gap-2">
-            <span className="text-lg font-bold text-[#55532B]">
-              ৳{currentPrice.toLocaleString("en-BD")}
-            </span>
-
-            {hasDiscount && (
-              <span className="text-sm text-gray-400 line-through">
-                ৳{regularPrice.toLocaleString("en-BD")}
-              </span>
-            )}
-          </div>
-
-          {hasDiscount && (
-            <p className="mt-1 text-xs font-medium text-green-700">
-              You Save ৳
-              {(regularPrice - salePrice).toLocaleString("en-BD")}
-            </p>
-          )}
-        </div>
       </Link>
 
-      {/* Action Buttons */}
-      <div className="flex gap-2 px-3 pb-4">
+      {/* Product Information */}
+      <div className="flex flex-1 flex-col px-3 pb-3 pt-1 sm:px-3.5">
 
-        <button
-          type="button"
-          onClick={handleAddToCart}
-          disabled={isOutOfStock}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-[#55532B] px-2 py-2.5 text-xs font-semibold text-[#55532B] transition hover:bg-[#F7F6E9] disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm"
-        >
-          <ShoppingCart size={16} />
-          Add to Cart
-        </button>
+        {/* Product Name */}
+        <Link href={`/products/${product.slug}`}>
+          <h3 className=" min-h-[30px] text-sm font-medium leading-5 text-[#242424] transition-colors group-hover:text-[#F58220]  sm:text-base sm:leading-5">
+            {product.name}
+          </h3>
+        </Link>
 
-        <button
-          type="button"
-          onClick={handleBuyNow}
-          disabled={isOutOfStock}
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[#55532B] px-2 py-2.5 text-xs font-semibold text-white transition hover:bg-[#414021] disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm"
-        >
-          <Zap size={16} />
-          Buy Now
-        </button>
+        {/* Price - Reduced Gap */}
+        <div className="flex  flex-wrap items-center gap-x-2 ">
 
+          <span className="text-base font-bold text-[#F58220] sm:text-lg">
+            ৳{formatPrice(currentPrice)}
+          </span>
+
+          {hasDiscount && (
+            <span className="text-xs font-medium text-gray-400 line-through sm:text-sm">
+              ৳{formatPrice(regularPrice)}
+            </span>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-auto flex flex-col gap-2 pt-3 sm:flex-row sm:gap-2">
+
+          {/* Add To Cart */}
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            disabled={isOutOfStock}
+            className="flex w-full flex-1 items-center justify-center gap-1.5 rounded-md border border-[#F58220] bg-white px-2 py-2.5 text-xs font-semibold text-[#F58220] transition-all duration-300 hover:bg-[#F58220] hover:text-white disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400 sm:text-sm"
+          >
+            <ShoppingCart size={16} />
+
+            Add To Cart
+          </button>
+
+          {/* Buy Now */}
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            disabled={isOutOfStock}
+            className="flex w-full flex-1 items-center justify-center gap-1.5 rounded-md bg-[#55532B] px-2 py-2.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-[#414021] disabled:cursor-not-allowed disabled:bg-gray-300 sm:text-sm"
+          >
+            <Zap size={16} />
+
+            Buy Now
+          </button>
+
+        </div>
       </div>
     </div>
   );
