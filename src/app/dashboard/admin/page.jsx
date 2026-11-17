@@ -1,8 +1,14 @@
-import { requireRole } from "@/lib/require-role";
-import AdminDashboard from "@/components/dashboard/admin/AdminDashboard";
+import ProductManagement from "@/components/products/ProductManagement";
 
-export default async function AdminPage() {
-  await requireRole(["admin"]);
 
-  return <AdminDashboard />;
+export const metadata = {
+  title: "Product Management | Shreyoshi Foods",
+};
+
+export default function AdminProductsPage() {
+  return (
+    <div className="min-h-screen bg-[#F7F6E9] p-3 sm:p-5 lg:p-6">
+      <ProductManagement />
+    </div>
+  );
 }
