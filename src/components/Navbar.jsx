@@ -20,12 +20,18 @@ import {
   Phone,
   Leaf,
   LayoutGrid,
+<<<<<<< HEAD
   Minus,
   Plus,
 } from "lucide-react";
 
 import { authClient, useSession } from "@/lib/auth-client";
 import { useCart } from "@/context/CartContext";
+=======
+} from "lucide-react";
+
+import { authClient, useSession } from "@/lib/auth-client";
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
 
 const categories = [
   { name: "Home", href: "/", icon: Home },
@@ -52,6 +58,7 @@ export default function Navbar() {
 
   const user = session?.user;
 
+<<<<<<< HEAD
   // Cart Context
   const {
     cartItems = [],
@@ -98,6 +105,13 @@ export default function Navbar() {
     router.push("/checkout");
   };
 
+=======
+  const [search, setSearch] = useState("");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   // Auth State Change
   useEffect(() => {
     const handleAuthChange = () => refetch?.();
@@ -111,13 +125,21 @@ export default function Navbar() {
 
   // Lock Body Scroll
   useEffect(() => {
+<<<<<<< HEAD
     document.body.style.overflow =
       mobileOpen || cartOpen ? "hidden" : "";
+=======
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
 
     return () => {
       document.body.style.overflow = "";
     };
+<<<<<<< HEAD
   }, [mobileOpen, cartOpen]);
+=======
+  }, [mobileOpen]);
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
 
   // Search
   const handleSearch = (e) => {
@@ -132,7 +154,10 @@ export default function Navbar() {
     setSearch("");
     setMoreOpen(false);
     setMobileOpen(false);
+<<<<<<< HEAD
     setCartOpen(false);
+=======
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   };
 
   // Logout
@@ -172,10 +197,14 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full bg-[#55532B] text-[#FFFEF7] shadow-md">
 
+<<<<<<< HEAD
       {/* ===================================== */}
       {/* MAIN NAVBAR */}
       {/* ===================================== */}
 
+=======
+      {/* Main Navbar */}
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
       <div className="mx-auto flex max-w-[1800px] items-center gap-5 px-4 py-3 sm:px-6 lg:px-8">
 
         {/* Logo */}
@@ -225,7 +254,10 @@ export default function Navbar() {
         {/* Desktop Right Actions */}
         <div className="ml-auto hidden items-center gap-5 lg:flex">
 
+<<<<<<< HEAD
           {/* Order Track */}
+=======
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           <Link
             href="/track-order"
             className="flex flex-col items-center gap-1 transition hover:text-[#E8DCA9]"
@@ -234,7 +266,10 @@ export default function Navbar() {
             <span className="text-xs font-medium">Order Track</span>
           </Link>
 
+<<<<<<< HEAD
           {/* Account */}
+=======
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           {isPending ? (
             <div className="h-10 w-10 animate-pulse rounded-full bg-white/20" />
           ) : user ? (
@@ -255,6 +290,7 @@ export default function Navbar() {
             </Link>
           )}
 
+<<<<<<< HEAD
           {/* Desktop Cart Button */}
           <button
             type="button"
@@ -280,6 +316,19 @@ export default function Navbar() {
           </button>
 
           {/* More Button */}
+=======
+          <Link
+            href="/cart"
+            className="relative flex flex-col items-center gap-1 transition hover:text-[#E8DCA9]"
+          >
+            <ShoppingCart size={25} />
+            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#E8DCA9] text-[11px] font-bold text-[#55532B]">
+              0
+            </span>
+            <span className="text-xs font-medium">Cart</span>
+          </Link>
+
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           <button
             onClick={() => setMoreOpen((prev) => !prev)}
             aria-label="More menu"
@@ -291,7 +340,11 @@ export default function Navbar() {
           </button>
         </div>
 
+<<<<<<< HEAD
         {/* Mobile Menu Icon */}
+=======
+        {/* Mobile Menu Icon Only */}
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
         <button
           onClick={() => setMobileOpen(true)}
           aria-label="Open menu"
@@ -302,10 +355,14 @@ export default function Navbar() {
         </button>
       </div>
 
+<<<<<<< HEAD
       {/* ===================================== */}
       {/* DESKTOP CATEGORY NAVIGATION */}
       {/* ===================================== */}
 
+=======
+      {/* Desktop Category Navigation */}
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
       <div className="hidden border-t border-[#E8DCA9]/30 bg-[#F7F6E9] lg:block">
         <nav className="mx-auto flex max-w-[1800px] items-center gap-8 overflow-x-auto px-5 py-4 scrollbar-hide lg:justify-between lg:px-10">
           {categories.map((category) => (
@@ -320,10 +377,14 @@ export default function Navbar() {
         </nav>
       </div>
 
+<<<<<<< HEAD
       {/* ===================================== */}
       {/* DESKTOP MORE DROPDOWN */}
       {/* ===================================== */}
 
+=======
+      {/* Desktop More Dropdown */}
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
       {moreOpen && (
         <>
           <div
@@ -350,10 +411,14 @@ export default function Navbar() {
         </>
       )}
 
+<<<<<<< HEAD
       {/* ===================================== */}
       {/* MOBILE OVERLAY */}
       {/* ===================================== */}
 
+=======
+      {/* Mobile Overlay */}
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
       <div
         onClick={closeMobileMenu}
         className={`fixed inset-0 z-[60] bg-black/50 backdrop-blur-[2px] transition-opacity duration-300 lg:hidden ${
@@ -363,10 +428,14 @@ export default function Navbar() {
         }`}
       />
 
+<<<<<<< HEAD
       {/* ===================================== */}
       {/* MOBILE DRAWER */}
       {/* ===================================== */}
 
+=======
+      {/* Mobile Drawer */}
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
       <aside
         className={`fixed right-0 top-0 z-[70] flex h-[100dvh] w-[min(88%,380px)] flex-col bg-[#FFFEF7] text-[#55532B] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
           mobileOpen ? "translate-x-0" : "translate-x-full"
@@ -388,7 +457,10 @@ export default function Navbar() {
               <h2 className="text-lg font-extrabold">
                 SHREYOSHI <span className="text-[#E8DCA9]">FOODS</span>
               </h2>
+<<<<<<< HEAD
 
+=======
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
               <p className="text-[8px] tracking-[2px] text-[#F7F6E9]">
                 PURE NATURE · PURE TASTE
               </p>
@@ -502,6 +574,7 @@ export default function Navbar() {
           {/* Quick Links */}
           <div className="mb-6 grid grid-cols-2 gap-3">
 
+<<<<<<< HEAD
             {/* Mobile Cart Button */}
             <button
               type="button"
@@ -525,6 +598,16 @@ export default function Navbar() {
                 </p>
               </div>
             </button>
+=======
+            <Link
+              href="/cart"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-2 rounded-xl border border-[#E8E5D5] p-3 transition hover:bg-[#F7F6E9]"
+            >
+              <ShoppingCart size={19} />
+              <span className="text-sm font-semibold">My Cart</span>
+            </Link>
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
 
             <Link
               href="/track-order"
@@ -540,13 +623,20 @@ export default function Navbar() {
           <div className="mb-6">
             <div className="mb-3 flex items-center gap-2">
               <LayoutGrid size={17} className="text-[#88865A]" />
+<<<<<<< HEAD
 
+=======
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
               <h3 className="text-xs font-bold uppercase tracking-[2px] text-[#88865A]">
                 Shop Categories
               </h3>
             </div>
 
             <div className="divide-y divide-[#E8E5D5] rounded-xl border border-[#E8E5D5] bg-white px-3">
+<<<<<<< HEAD
+=======
+
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
               {categories.map((category) => (
                 <Link
                   key={category.name}
@@ -624,12 +714,16 @@ export default function Navbar() {
           <p className="text-xs font-semibold tracking-wider text-[#55532B]">
             SHREYOSHI FOODS
           </p>
+<<<<<<< HEAD
 
+=======
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           <p className="mt-1 text-[10px] text-gray-500">
             PURE NATURE · PURE TASTE
           </p>
         </div>
       </aside>
+<<<<<<< HEAD
 
       {/* ===================================== */}
       {/* SHOPPING CART OVERLAY */}
@@ -831,6 +925,8 @@ export default function Navbar() {
           </button>
         </div>
       </aside>
+=======
+>>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
     </header>
   );
 }
