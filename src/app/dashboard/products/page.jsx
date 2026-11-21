@@ -1,9 +1,10 @@
+import ProductManagement from '@/components/products/ProductManagement';
 import React from 'react';
 
 const products = () => {
     return (
         <div>
-            sds
+            <ProductManagement></ProductManagement>
         </div>
     );
 };

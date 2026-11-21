@@ -1,27 +1,24 @@
 
 "use client";
 
-<<<<<<< HEAD
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ShoppingCart, Zap, Check } from "lucide-react";
 
 import { useCart } from "@/context/CartContext";
+import { useSession } from "@/lib/auth-client";
 
 export default function ProductCard({ product }) {
   const router = useRouter();
-
+  const { data: session, isPending } = useSession();
   const { addToCart, buyNow } = useCart();
 
   const [added, setAdded] = useState(false);
 
-=======
-import Link from "next/link";
-import { ShoppingCart, Zap } from "lucide-react";
+  const user = session?.user;
+  const canPurchase = !isPending && user?.role === "user";
 
-export default function ProductCard({ product }) {
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const image = product.images?.main;
 
   const regularPrice = Number(product.regularPrice || 0);
@@ -33,26 +30,19 @@ export default function ProductCard({ product }) {
   const currentPrice = hasDiscount ? salePrice : regularPrice;
 
   const discountPercentage = hasDiscount
-    ? Math.round(
-        ((regularPrice - salePrice) / regularPrice) * 100
-      )
+    ? Math.round(((regularPrice - salePrice) / regularPrice) * 100)
     : 0;
 
-  const isOutOfStock =
-    product.stockStatus === "out_of_stock";
-
+  const isOutOfStock = product.stockStatus === "out_of_stock";
   const isNewArrival = product.isNewArrival === true;
 
   const formatPrice = (price) =>
-    price.toLocaleString("en-BD");
+    Number(price || 0).toLocaleString("en-BD");
 
-<<<<<<< HEAD
-  // Add To Cart
   const handleAddToCart = () => {
-    if (isOutOfStock) return;
+    if (!canPurchase || isOutOfStock) return;
 
     addToCart(product, 1);
-
     setAdded(true);
 
     setTimeout(() => {
@@ -60,37 +50,19 @@ export default function ProductCard({ product }) {
     }, 1500);
   };
 
-  // Buy Now
   const handleBuyNow = () => {
-    if (isOutOfStock) return;
+    if (!canPurchase || isOutOfStock) return;
 
     buyNow(product, 1);
-
     router.push("/checkout");
-=======
-  const handleAddToCart = () => {
-    if (isOutOfStock) return;
-
-    console.log("Add to Cart:", product._id);
-  };
-
-  const handleBuyNow = () => {
-    if (isOutOfStock) return;
-
-    console.log("Buy Now:", product._id);
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   };
 
   return (
     <div className="group flex h-full flex-col overflow-hidden rounded-lg border border-[#E5E5E5] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#D8C8A0] hover:shadow-lg">
 
       {/* Product Image */}
-      <Link
-        href={`/products/${product.slug}`}
-        className="block"
-      >
+      <Link href={`/products/${product.slug}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-white">
-
           {image ? (
             <img
               src={image}
@@ -104,30 +76,18 @@ export default function ProductCard({ product }) {
             </div>
           )}
 
-<<<<<<< HEAD
-=======
-          {/* New Arrival Badge */}
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           {isNewArrival && (
             <span className="absolute left-3 top-3 rounded-md bg-[#F58220] px-2 py-1 text-[10px] font-semibold text-white shadow-sm sm:text-xs">
               New Arrival
             </span>
           )}
 
-<<<<<<< HEAD
-=======
-          {/* Discount Badge */}
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           {hasDiscount && (
             <span className="absolute right-3 top-3 rounded-md bg-[#2DBD85] px-2 py-1 text-[10px] font-semibold text-white shadow-sm sm:text-xs">
               Save {discountPercentage}%
             </span>
           )}
 
-<<<<<<< HEAD
-=======
-          {/* Out of Stock */}
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           {isOutOfStock && (
             <span className="absolute bottom-3 left-3 rounded-md bg-gray-800 px-2.5 py-1 text-xs font-semibold text-white">
               Out of Stock
@@ -138,27 +98,14 @@ export default function ProductCard({ product }) {
 
       {/* Product Information */}
       <div className="flex flex-1 flex-col px-3 pb-3 pt-1 sm:px-3.5">
-
-<<<<<<< HEAD
         <Link href={`/products/${product.slug}`}>
           <h3 className="min-h-[30px] text-sm font-medium leading-5 text-[#242424] transition-colors group-hover:text-[#F58220] sm:text-base sm:leading-5">
-=======
-        {/* Product Name */}
-        <Link href={`/products/${product.slug}`}>
-          <h3 className=" min-h-[30px] text-sm font-medium leading-5 text-[#242424] transition-colors group-hover:text-[#F58220]  sm:text-base sm:leading-5">
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             {product.name}
           </h3>
         </Link>
 
-<<<<<<< HEAD
         {/* Price */}
         <div className="flex flex-wrap items-center gap-x-2">
-=======
-        {/* Price - Reduced Gap */}
-        <div className="flex  flex-wrap items-center gap-x-2 ">
-
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           <span className="text-base font-bold text-[#F58220] sm:text-lg">
             ৳{formatPrice(currentPrice)}
           </span>
@@ -170,49 +117,41 @@ export default function ProductCard({ product }) {
           )}
         </div>
 
-        {/* Action Buttons */}
-        <div className="mt-auto flex flex-col gap-2 pt-3 sm:flex-row sm:gap-2">
+        {/* Purchase Buttons: Only normal users */}
+        {canPurchase && (
+          <div className="mt-auto flex flex-col gap-2 pt-3 sm:flex-row sm:gap-2">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              disabled={isOutOfStock}
+              className={`flex w-full flex-1 items-center justify-center gap-1.5 rounded-md border px-2 py-2.5 text-xs font-semibold transition-all duration-300 sm:text-sm ${
+                added
+                  ? "border-green-600 bg-green-600 text-white"
+                  : "border-[#F58220] bg-white text-[#F58220] hover:bg-[#F58220] hover:text-white"
+              } disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400`}
+            >
+              {added ? <Check size={16} /> : <ShoppingCart size={16} />}
+              {added ? "Added" : "Add To Cart"}
+            </button>
 
-          {/* Add To Cart */}
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={isOutOfStock}
-<<<<<<< HEAD
-            className={`flex w-full flex-1 items-center justify-center gap-1.5 rounded-md border px-2 py-2.5 text-xs font-semibold transition-all duration-300 sm:text-sm ${
-              added
-                ? "border-green-600 bg-green-600 text-white"
-                : "border-[#F58220] bg-white text-[#F58220] hover:bg-[#F58220] hover:text-white"
-            } disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400`}
-          >
-            {added ? <Check size={16} /> : <ShoppingCart size={16} />}
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              disabled={isOutOfStock}
+              className="flex w-full flex-1 items-center justify-center gap-1.5 rounded-md bg-[#55532B] px-2 py-2.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-[#414021] disabled:cursor-not-allowed disabled:bg-gray-300 sm:text-sm"
+            >
+              <Zap size={16} />
+              Buy Now
+            </button>
+          </div>
+        )}
 
-            {added ? "Added" : "Add To Cart"}
-=======
-            className="flex w-full flex-1 items-center justify-center gap-1.5 rounded-md border border-[#F58220] bg-white px-2 py-2.5 text-xs font-semibold text-[#F58220] transition-all duration-300 hover:bg-[#F58220] hover:text-white disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400 sm:text-sm"
-          >
-            <ShoppingCart size={16} />
-
-            Add To Cart
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
-          </button>
-
-          {/* Buy Now */}
-          <button
-            type="button"
-            onClick={handleBuyNow}
-            disabled={isOutOfStock}
-            className="flex w-full flex-1 items-center justify-center gap-1.5 rounded-md bg-[#55532B] px-2 py-2.5 text-xs font-semibold text-white transition-all duration-300 hover:bg-[#414021] disabled:cursor-not-allowed disabled:bg-gray-300 sm:text-sm"
-          >
-            <Zap size={16} />
-<<<<<<< HEAD
-=======
-
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
-            Buy Now
-          </button>
-
-        </div>
+        {/* Loading state while checking login */}
+        {isPending && (
+          <div className="mt-auto pt-3">
+            <div className="h-10 animate-pulse rounded-md bg-gray-100" />
+          </div>
+        )}
       </div>
     </div>
   );

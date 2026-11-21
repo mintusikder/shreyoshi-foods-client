@@ -3,10 +3,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-<<<<<<< HEAD
 import { useRouter } from "next/navigation";
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
+
 import {
   ShoppingCart,
   Zap,
@@ -23,24 +21,31 @@ import {
   Home,
 } from "lucide-react";
 
-<<<<<<< HEAD
 import { useCart } from "@/context/CartContext";
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
+import { useSession } from "@/lib/auth-client";
 import RelatedProducts from "./RelatedProducts";
 
 export default function ProductDetails({
   product,
   relatedProducts = [],
 }) {
-<<<<<<< HEAD
   const router = useRouter();
 
   const { addToCart, buyNow } = useCart();
 
+  // Authentication
+  const {
+    data: session,
+    isPending,
+  } = useSession();
+
+  const user = session?.user;
+
+  // Only normal users can purchase
+  const canPurchase =
+    !isPending && user?.role === "user";
+
   // Product Gallery
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const gallery = [
     product.images?.main,
     ...(product.images?.gallery || []),
@@ -50,15 +55,10 @@ export default function ProductDetails({
     gallery[0] || ""
   );
 
-<<<<<<< HEAD
   // Quantity
   const [quantity, setQuantity] = useState(1);
 
   // Product Price
-=======
-  const [quantity, setQuantity] = useState(1);
-
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const regularPrice = Number(product.regularPrice || 0);
   const salePrice = Number(product.salePrice || 0);
 
@@ -75,10 +75,7 @@ export default function ProductDetails({
       )
     : 0;
 
-<<<<<<< HEAD
   // Stock Management
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const hasStockQuantity =
     product.stockQuantity !== undefined &&
     product.stockQuantity !== null &&
@@ -89,23 +86,16 @@ export default function ProductDetails({
     : null;
 
   const isOutOfStock =
-<<<<<<< HEAD
     ["out_of_stock", "out of stock"].includes(
       String(product.stockStatus || "").toLowerCase()
     ) ||
-=======
-    product.stockStatus === "out_of_stock" ||
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
     (hasStockQuantity && stockQuantity <= 0);
 
   const isLowStock =
     !isOutOfStock &&
     product.stockStatus === "low_stock";
 
-<<<<<<< HEAD
   // Delivery Information
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const isFreeShipping =
     product.freeShipping === true ||
     product.freeShipping === "true";
@@ -114,17 +104,11 @@ export default function ProductDetails({
     product.deliveryCharge || 0
   );
 
-<<<<<<< HEAD
   // Price Formatter
   const formatPrice = (price) =>
     Number(price || 0).toLocaleString("en-BD");
 
   // Contact Information
-=======
-  const formatPrice = (price) =>
-    Number(price || 0).toLocaleString("en-BD");
-
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const whatsappNumber = String(
     product.whatsappNumber || ""
   ).replace(/\D/g, "");
@@ -133,10 +117,7 @@ export default function ProductDetails({
     product.phone || ""
   ).replace(/\D/g, "");
 
-<<<<<<< HEAD
   // Quantity Handler
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const handleQuantity = (type) => {
     if (type === "increase") {
       if (
@@ -152,17 +133,16 @@ export default function ProductDetails({
     }
   };
 
-<<<<<<< HEAD
-  // Add To Cart
+  // Add To Cart - Only User
   const handleAddToCart = () => {
-    if (isOutOfStock) return;
+    if (!canPurchase || isOutOfStock) return;
 
     addToCart(product, quantity);
   };
 
-  // Buy Now
+  // Buy Now - Only User
   const handleBuyNow = () => {
-    if (isOutOfStock) return;
+    if (!canPurchase || isOutOfStock) return;
 
     buyNow(product, quantity);
 
@@ -170,26 +150,6 @@ export default function ProductDetails({
   };
 
   // Gallery Image Change
-=======
-  const handleAddToCart = () => {
-    if (isOutOfStock) return;
-
-    console.log("Add to Cart:", {
-      productId: product._id,
-      quantity,
-    });
-  };
-
-  const handleBuyNow = () => {
-    if (isOutOfStock) return;
-
-    console.log("Buy Now:", {
-      productId: product._id,
-      quantity,
-    });
-  };
-
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const changeImage = (direction) => {
     if (gallery.length <= 1) return;
 
@@ -203,10 +163,7 @@ export default function ProductDetails({
     setSelectedImage(gallery[nextIndex]);
   };
 
-<<<<<<< HEAD
   // Additional Product Details
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
   const additionalDetails = [
     ["Category", product.category],
     ["Brand", product.brand],
@@ -289,10 +246,7 @@ export default function ProductDetails({
                       )}
                     </button>
                   ))}
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
                 </div>
               )}
 
@@ -311,20 +265,14 @@ export default function ProductDetails({
                   </div>
                 )}
 
-<<<<<<< HEAD
                 {/* Discount Badge */}
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
                 {hasDiscount && (
                   <span className="absolute left-3 top-3 rounded-md bg-[#F58220] px-3 py-1 text-xs font-bold text-white">
                     {discount}% OFF
                   </span>
                 )}
 
-<<<<<<< HEAD
                 {/* Gallery Navigation */}
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
                 {gallery.length > 1 && (
                   <>
                     <button
@@ -346,10 +294,7 @@ export default function ProductDetails({
                     </button>
                   </>
                 )}
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
               </div>
             </div>
           </div>
@@ -357,28 +302,19 @@ export default function ProductDetails({
           {/* Product Information */}
           <div className="flex min-w-0 flex-col">
 
-<<<<<<< HEAD
             {/* Category */}
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             {product.category && (
               <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#88865A]">
                 {product.category}
               </p>
             )}
 
-<<<<<<< HEAD
             {/* Product Name */}
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             <h1 className="text-xl font-semibold leading-tight text-[#17201D] sm:text-2xl lg:text-[26px]">
               {product.name}
             </h1>
 
-<<<<<<< HEAD
             {/* Brand */}
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             {product.brand && (
               <p className="mt-1 text-xs text-gray-500 sm:text-sm">
                 Brand:{" "}
@@ -406,10 +342,7 @@ export default function ProductDetails({
                   </span>
                 </>
               )}
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             </div>
 
             {/* Short Description */}
@@ -419,11 +352,7 @@ export default function ProductDetails({
               </p>
             )}
 
-<<<<<<< HEAD
             {/* Stock Status */}
-=======
-            {/* Stock */}
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             <div className="mt-2">
 
               {isOutOfStock ? (
@@ -444,16 +373,10 @@ export default function ProductDetails({
                   In Stock
                 </p>
               )}
-<<<<<<< HEAD
 
             </div>
 
             {/* Quantity Selector */}
-=======
-            </div>
-
-            {/* Quantity */}
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             <div className="mt-3 flex items-center gap-4">
 
               <span className="text-sm font-medium text-[#333]">
@@ -489,47 +412,69 @@ export default function ProductDetails({
                 >
                   <Plus size={15} />
                 </button>
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {/* Action Buttons - Role Validation */}
+            <div className="mt-3">
 
-<<<<<<< HEAD
-              {/* Add To Cart */}
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                disabled={isOutOfStock}
-                className="flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-[#F58220] px-3 py-2 text-sm font-bold text-white transition hover:bg-[#E87512] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <ShoppingCart size={18} />
-                Add To Cart
-              </button>
+              {isPending ? (
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="h-11 animate-pulse rounded-lg bg-gray-200" />
+                  <div className="h-11 animate-pulse rounded-lg bg-gray-200" />
+                </div>
+              ) : canPurchase ? (
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
 
-<<<<<<< HEAD
-              {/* Buy Now */}
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
-              <button
-                type="button"
-                onClick={handleBuyNow}
-                disabled={isOutOfStock}
-                className="flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-[#062421] px-3 py-2 text-sm font-bold text-white transition hover:bg-[#0C3934] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <Zap size={17} />
-                Buy Now
-              </button>
-<<<<<<< HEAD
+                  {/* Add To Cart */}
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    disabled={isOutOfStock}
+                    className="flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-[#F58220] px-3 py-2 text-sm font-bold text-white transition hover:bg-[#E87512] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <ShoppingCart size={18} />
+                    Add To Cart
+                  </button>
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
+                  {/* Buy Now */}
+                  <button
+                    type="button"
+                    onClick={handleBuyNow}
+                    disabled={isOutOfStock}
+                    className="flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-[#062421] px-3 py-2 text-sm font-bold text-white transition hover:bg-[#0C3934] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Zap size={17} />
+                    Buy Now
+                  </button>
+
+                </div>
+              ) : (
+                <div className="rounded-lg border border-[#EAE8DF] bg-[#FAFAF7] p-3 text-center">
+
+                  {!user ? (
+                    <>
+                      <p className="text-sm font-medium text-gray-600">
+                        Please login with a customer account to purchase this product.
+                      </p>
+
+                      <Link
+                        href="/auth/login"
+                        className="mt-2 inline-flex items-center justify-center rounded-lg bg-[#55532B] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#777443]"
+                      >
+                        Login to Purchase
+                      </Link>
+                    </>
+                  ) : (
+                    <p className="text-sm font-medium text-gray-600">
+                      Your account does not have permission to purchase products.
+                    </p>
+                  )}
+
+                </div>
+              )}
+
             </div>
 
             {/* Contact Buttons */}
@@ -559,10 +504,7 @@ export default function ProductDetails({
                     Call For Order
                   </a>
                 )}
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
               </div>
             )}
 
@@ -570,10 +512,7 @@ export default function ProductDetails({
             <div className="mt-3 grid gap-2 rounded-lg border border-[#EAE8DF] bg-[#FAFAF7] p-3">
 
               <div className="flex items-center gap-3">
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-[#55532B]">
                   <Truck size={18} />
                 </div>
@@ -589,19 +528,13 @@ export default function ProductDetails({
                       : `Delivery Charge: ৳${formatPrice(deliveryCharge)}`}
                   </p>
                 </div>
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
               </div>
 
               <div className="h-px bg-[#EAE8DF]" />
 
               <div className="flex items-center gap-3">
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-[#55532B]">
                   <ShieldCheck size={18} />
                 </div>
@@ -615,26 +548,17 @@ export default function ProductDetails({
                     Carefully selected for your needs.
                   </p>
                 </div>
-<<<<<<< HEAD
 
               </div>
             </div>
 
             {/* SKU */}
-=======
-              </div>
-            </div>
-
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             {product.sku && (
               <p className="mt-2 text-xs text-gray-400">
                 SKU: {product.sku}
               </p>
             )}
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
           </div>
         </section>
 
@@ -650,10 +574,7 @@ export default function ProductDetails({
               product.shortDescription ||
               "No description available."}
           </p>
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
         </section>
 
         {/* Product Information */}
@@ -680,10 +601,7 @@ export default function ProductDetails({
                   </p>
                 </div>
               ))}
-<<<<<<< HEAD
 
-=======
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
             </div>
           </section>
         )}

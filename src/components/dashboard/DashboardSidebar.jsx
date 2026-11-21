@@ -58,25 +58,16 @@ const roleMenus = {
           href: "/dashboard/products",
           icon: Package,
         },
-<<<<<<< HEAD
         // {
         //   name: "Categories",
         //   href: "/dashboard/categories",
         //   icon: Tags,
         // },
-=======
-        {
-          name: "Categories",
-          href: "/dashboard/categories",
-          icon: Tags,
-        },
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
         {
           name: "Orders",
           href: "/dashboard/orders",
           icon: ShoppingBag,
         },
-<<<<<<< HEAD
         // {
         //   name: "Inventory",
         //   href: "/dashboard/inventory",
@@ -87,18 +78,6 @@ const roleMenus = {
         //   href: "/dashboard/shipping",
         //   icon: Truck,
         // },
-=======
-        {
-          name: "Inventory",
-          href: "/dashboard/inventory",
-          icon: Warehouse,
-        },
-        {
-          name: "Shipping",
-          href: "/dashboard/shipping",
-          icon: Truck,
-        },
->>>>>>> f9a220253cddcce1221902b340ed5610ee482fc6
         {
           name: "Homepage",
           href: "/dashboard/admin/homepage",
@@ -107,21 +86,21 @@ const roleMenus = {
       ],
     },
 
-    {
-      title: "CUSTOMER & REPORTS",
-      items: [
-        {
-          name: "Customers",
-          href: "/dashboard/customers",
-          icon: Users,
-        },
-        {
-          name: "Sales Reports",
-          href: "/dashboard/reports",
-          icon: FileBarChart,
-        },
-      ],
-    },
+    // {
+    //   title: "CUSTOMER & REPORTS",
+    //   items: [
+    //     {
+    //       name: "Customers",
+    //       href: "/dashboard/customers",
+    //       icon: Users,
+    //     },
+    //     {
+    //       name: "Sales Reports",
+    //       href: "/dashboard/reports",
+    //       icon: FileBarChart,
+    //     },
+    //   ],
+    // },
   ],
 
   manager: [
